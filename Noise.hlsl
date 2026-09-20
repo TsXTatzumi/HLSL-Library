@@ -28,8 +28,8 @@ namespace Hubris
         else if (noise == 16) value.x = WorleyNoise(xyzw.xyz, fallOff);
         else if (noise == 17) value.x = FlowNoise(xyzw.xy, angle);
         else if (noise == 18) value.x = FlowNoise(xyzw.xyz, angle);
-        else if (noise == 19) value.x = DerivativeFlowNoise(xyzw.xy, angle);
-        else if (noise == 20) value.x = DerivativeFlowNoise(xyzw.xyz, angle);
+        else if (noise == 19) value.xyz = DerivativeFlowNoise(xyzw.xy, angle);
+        else if (noise == 20) value = DerivativeFlowNoise(xyzw.xyz, angle);
         else if (noise == 21) value.xy = CurlNoise(xyzw.xy);
         else if (noise == 22) value.xy = CurlNoise(xyzw.xy, t);
         else if (noise == 23) value.xy = CurlNoise(xyzw.xy, octaves, lacunarity, gain);

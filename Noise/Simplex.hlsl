@@ -2113,14 +2113,14 @@ float iqMatFBM(float2 v, int octaves, float2x2 mat, float gain )
 	return sum;
 }
 
-// void seed( int s ) {
-//     std::random_device rd;
-//     std::mt19937 gen( rd() );
-//     gen.seed( s );
-//     std::uniform_int_distribution<> distribution( 1, 255 );
-//     for( size_t i = 0; i < 256; ++i ) {
-//         Details::perm[i] = Details::perm[i + 256] = distribution( gen);
-//     }
+ //void seed( int s ) {
+ //    std::random_device rd;
+ //    std::mt19937 gen( rd() );
+ //    gen.seed( s );
+ //    std::uniform_int_distribution<> distribution( 1, 255 );
+ //    for( size_t i = 0; i < 256; ++i ) {
+ //        Details::perm[i] = Details::perm[i + 256] = distribution( gen);
+ //    }
 //}
 	
 #undef FASTFLOOR
