@@ -1192,6 +1192,95 @@ float WorleyNoise(float3 v, float falloff )
 	}
 	return -( 1.0f / falloff ) * log( res );
 }
+
+float3 WorleyNoiseWithOwnership(float2 v)
+{
+	float2 p = floor(v);
+	float2 f = frac(v);
+	
+	float2 pos = float2(0, 0);
+	float res = 8.0;
+	for (int j = -1; j <= 1; j++) {
+		for (int i = -1; i <= 1; i++) {
+			float2 b = float2(i, j);
+			float2  r = b - f + (NoiseSimplex(p + b) * 0.5f + 0.5f);
+			float d = dot(r, r);
+			if (d < res)
+			{
+				pos = b + p;
+			}
+			res = min(res, d);
+		}
+	}
+	return float3(sqrt(res), pos);
+}
+float4 WorleyNoiseWithOwnership(float3 v)
+{
+	float3 p = floor(v);
+	float3 f = frac(v);
+
+	float3 pos = float3(0, 0, 0);
+	float res = 8.0;
+	for (int k = -1; k <= 1; k++) {
+		for (int j = -1; j <= 1; j++) {
+			for (int i = -1; i <= 1; i++) {
+				float3 b = float3(i, j, k);
+				float3 r = b - f + (NoiseSimplex(p + b) * 0.5f + 0.5f);
+				float d = dot(r, r);
+				if (d < res)
+				{
+					pos = b + p;
+				}
+				res = min(res, d);
+			}
+		}
+	}
+	return float4(sqrt(res), pos);
+}
+float3 WorleyNoiseWithOwnership(float2 v, float falloff)
+{
+	float2 p = floor(v);
+	float2 f = frac(v);
+
+	float2 pos = float2(0, 0);
+	float res = 0.0f;
+	for (int j = -1; j <= 1; j++) {
+		for (int i = -1; i <= 1; i++) {
+			float2 b = float2(i, j);
+			float2 r = b - f + (NoiseSimplex(p + b) * 0.5f + 0.5f);
+			float d = length(r);
+			if (d < res)
+			{
+				pos = b + p;
+			}
+			res += exp(-falloff * d);
+		}
+	}
+	return float3(-(1.0f / falloff) * log(res), pos);
+}
+float4 WorleyNoiseWithOwnership(float3 v, float falloff)
+{
+	float3 p = floor(v);
+	float3 f = frac(v);
+
+	float3 pos = float3(0, 0, 0);
+	float res = 0.0f;
+	for (int k = -1; k <= 1; k++) {
+		for (int j = -1; j <= 1; j++) {
+			for (int i = -1; i <= 1; i++) {
+				float3 b = float3(i, j, k);
+				float3 r = b - f + (NoiseSimplex(p + b) * 0.5f + 0.5f);
+				float d = length(r);
+				if (d < res)
+				{
+					pos = b + p;
+				}
+				res += exp(-falloff * d);
+			}
+		}
+	}
+	return float4(-(1.0f / falloff) * log(res), pos);
+}
 	
 float FlowNoise(float2 v, float angle )
 {
