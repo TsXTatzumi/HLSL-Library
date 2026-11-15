@@ -1198,21 +1198,48 @@ float3 WorleyNoiseWithOwnership(float2 v)
 	float2 p = floor(v);
 	float2 f = frac(v);
 	
-	float2 pos = float2(0, 0);
-	float res = 8.0;
+	float2 nearestPos = float2(0, 0);
+    float2 nearest = float2(0, 0);
+	float minDist = 8.0;
 	for (int j = -1; j <= 1; j++) {
 		for (int i = -1; i <= 1; i++) {
 			float2 b = float2(i, j);
-			float2  r = b - f + (NoiseSimplex(p + b) * 0.5f + 0.5f);
+                float2 r = b - f + (NoiseSimplex(p + b) * 0.5f + 0.5f);
 			float d = dot(r, r);
-			if (d < res)
+            if (d < minDist)
 			{
-				pos = b + p;
+				nearestPos = b + p;
+				nearest = r;
 			}
-			res = min(res, d);
-		}
+                minDist = min(minDist, d);
+            }
 	}
-	return float3(sqrt(res), pos);
+		
+    // Pass 2: Find nearest Voronoi boundary
+        float edgeDist = 8.0;
+
+        for (int j = -1; j <= 1; j++) {
+            for (int i = -1; i <= 1; i++) {
+                float2 b = float2(i, j);
+
+                float2 r = b - f + (NoiseSimplex(p + b) * 0.5f + 0.5f);
+
+                float2 diff = r - nearest;
+
+                if (dot(diff, diff) > 0.0001)
+                {
+                    float2 dir = normalize(diff);
+
+                    float d = dot((nearest + r) * 0.5, dir);
+
+                    edgeDist = min(edgeDist, d);
+                }
+            }
+        }
+
+        float mask = saturate(sqrt(sqrt(edgeDist * 2.0)));
+
+        return float3(mask, nearestPos);
 }
 float4 WorleyNoiseWithOwnership(float3 v)
 {
@@ -1221,6 +1248,7 @@ float4 WorleyNoiseWithOwnership(float3 v)
 
 	float3 pos = float3(0, 0, 0);
 	float res = 8.0;
+    float secondBest = 8.0;
 	for (int k = -1; k <= 1; k++) {
 		for (int j = -1; j <= 1; j++) {
 			for (int i = -1; i <= 1; i++) {
@@ -1229,13 +1257,14 @@ float4 WorleyNoiseWithOwnership(float3 v)
 				float d = dot(r, r);
 				if (d < res)
 				{
+					secondBest = res;
 					pos = b + p;
 				}
 				res = min(res, d);
 			}
 		}
 	}
-	return float4(sqrt(res), pos);
+	return float4(sqrt(secondBest - res), pos);
 }
 float3 WorleyNoiseWithOwnership(float2 v, float falloff)
 {
@@ -2222,3 +2251,4 @@ float iqMatFBM(float2 v, int octaves, float2x2 mat, float gain )
 }
 
 #endif // HUBRIS_NOISE_SIMPLEX
+
